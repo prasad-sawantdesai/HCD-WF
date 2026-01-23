@@ -1,12 +1,14 @@
-name: Static Code Analysis
+name: linting-and-code-formatting
 
-on:
+on: 
   push:
   pull_request:
+    types: [opened, synchronize, reopened]
+
 
 jobs:
   static-analysis:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     
     steps:
       - uses: actions/checkout@v4
