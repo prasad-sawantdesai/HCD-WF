@@ -1,0 +1,110 @@
+name: Static Code Analysis
+
+on:
+  push:
+    branches: [ develop, main, 'add_git_actions_*' ]
+  pull_request:
+    branches: [ develop, main ]
+
+jobs:
+  static-analysis:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      
+      - name: Cache pip packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
+          restore-keys: |
+            ${{ runner.os }}-pip-
+      
+      - name: Install linting tools
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade 'black >=24,<25' flake8 pylint ruff
+      
+      - name: Create log directories
+        run: |
+          mkdir -p black_logs
+          mkdir -p flake8_logs
+          mkdir -p pylint_logs
+          mkdir -p ruff_logs
+      
+      - name: Run Black (code formatter check)
+        run: |
+          echo "---------------------------------------------------------------------"
+          echo "Executing black"
+          echo "---------------------------------------------------------------------"
+          black --check -l 120 hcdworkflow | tee black_logs/hcdworkflow.log || true
+          black --check -l 120 tools | tee black_logs/tools.log || true
+          black --check -l 120 gui | tee black_logs/gui.log || true
+          black --check -l 120 workflow | tee black_logs/workflow.log || true
+      
+      - name: Run Flake8 (style guide checker)
+        run: |
+          echo "---------------------------------------------------------------------"
+          echo "Executing flake8"
+          echo "---------------------------------------------------------------------"
+          flake8 --max-line-length=120 --ignore=E203,W503 hcdworkflow | tee flake8_logs/hcdworkflow.log || true
+          flake8 --max-line-length=120 --ignore=E203,W503 tools | tee flake8_logs/tools.log || true
+          flake8 --max-line-length=120 --ignore=E203,W503 workflow | tee flake8_logs/workflow.log || true
+          flake8 --max-line-length=120 --ignore=E203,W503 gui | tee flake8_logs/gui.log || true
+      
+      - name: Run Pylint (code analyzer)
+        run: |
+          echo "---------------------------------------------------------------------"
+          echo "Executing pylint"
+          echo "---------------------------------------------------------------------"
+          pylint --max-line-length=120 --disable=E0401 -E ./hcdworkflow/*.py | tee pylint_logs/hcdworkflow.log || true
+          pylint --max-line-length=120 --disable=E0401 -E ./tools/*.py | tee pylint_logs/tools.log || true
+          pylint --max-line-length=120 --disable=E0401 -E ./gui/*.py | tee pylint_logs/gui.log || true
+          pylint --max-line-length=120 --disable=E0401 -E ./workflow/*.py | tee pylint_logs/workflow.log || true
+      
+      - name: Run Ruff (fast Python linter)
+        run: |
+          echo "---------------------------------------------------------------------"
+          echo "Executing ruff"
+          echo "---------------------------------------------------------------------"
+          ruff check hcdworkflow --select F401,E402 | tee ruff_logs/hcdworkflow.log || true
+          ruff check tools --select F401,E402 | tee ruff_logs/tools.log || true
+          ruff check gui --select F401,E402 | tee ruff_logs/gui.log || true
+          ruff check workflow --select F401,E402 | tee ruff_logs/workflow.log || true
+      
+      - name: Upload analysis logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: linter-logs-python-3.11
+          path: |
+            black_logs/
+            flake8_logs/
+            pylint_logs/
+            ruff_logs/
+          retention-days: 30
+      
+      - name: Summary
+        if: always()
+        run: |
+          echo "---------------------------------------------------------------------"
+          echo "Static Analysis Complete"
+          echo "---------------------------------------------------------------------"
+          echo ""
+          echo "Black (Formatter):"
+          wc -l black_logs/* 2>/dev/null || echo "  No issues found"
+          echo ""
+          echo "Flake8 (Style):"
+          wc -l flake8_logs/* 2>/dev/null || echo "  No issues found"
+          echo ""
+          echo "Pylint (Analysis):"
+          wc -l pylint_logs/* 2>/dev/null || echo "  No issues found"
+          echo ""
+          echo "Ruff (Linter):"
+          wc -l ruff_logs/* 2>/dev/null || echo "  No issues found"
