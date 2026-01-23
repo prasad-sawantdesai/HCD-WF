@@ -2,9 +2,7 @@ name: Static Code Analysis
 
 on:
   push:
-    branches: [ develop, main, 'add_git_actions_*' ]
   pull_request:
-    branches: [ develop, main ]
 
 jobs:
   static-analysis:
