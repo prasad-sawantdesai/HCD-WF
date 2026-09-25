@@ -6,9 +6,13 @@
 #   TESTS     space-separated CASE:IDS,IDS entries, CASE being a folder of tests/data and IDS the
 #             IDSs the actors must write, e.g. "GRAYSCALE:waves" (required)
 #   ACTORS    see st02-build-actors.sh, only needed when actor_paths.env does not exist yet
+#   UPDATE_REFERENCE  set to 1 to write the reference values from this run instead of comparing
+#   RTOL      relative tolerance of the value comparison (default: 1e-6)
 #
 # Each case runs on copies of its configuration writing HDF5 output to ci_regression/<CASE>/{full,slice},
 # so runs do not touch the user database and can run in parallel.
+# The values of each IDS are compared with tests/reference/<CASE>/dd-<IMAS_VERSION>/<IDS>.json
+# when that file exists.
 
 source ./ci-sdcc/st00-header.sh || exit 1
 
@@ -41,8 +45,6 @@ export IMAS_AL_DISABLE_OBSOLESCENT_WARNING=1
 export PYTHONPATH="$ACTOR_PATHS:${PYTHONPATH:-}"
 PYTHONPATH="$(perl -e 'print join(":", grep { length and not $seen{$_}++ } split(/:/, $ENV{PYTHONPATH}))')"
 export PYTHONPATH
-
-module unload Python-bundle-PyPI
 
 #remove previously created environment
 VIRTUALENV_DIR=virtualenvdir
@@ -121,9 +123,13 @@ for test in $TESTS; do
     work="$RESULTS_DIR/$case_name/full"
     run_step "hcd_nogui" "$work/hcd_nogui.log" hcd_nogui -c "$work" || FAILED+=("$case_name:hcd_nogui")
     if [[ -n "$expected_ids" ]]; then
+        check_args=(--reference-dir "$ROOT_DIR/tests/reference/$case_name/dd-${IMAS_VERSION:-unknown}")
+        check_args+=(--rtol "${RTOL:-1e-6}")
+        [[ "${UPDATE_REFERENCE:-}" =~ ^([Tt]rue|1)$ ]] && check_args+=(--update)
         # shellcheck disable=SC2086
         run_step "output check" "$work/check_output.log" \
-            python3 "$ROOT_DIR/ci-sdcc/check_output.py" "$work" ${expected_ids//,/ } || FAILED+=("$case_name:output")
+            python3 "$ROOT_DIR/ci-sdcc/check_output.py" "${check_args[@]}" "$work" ${expected_ids//,/ } ||
+            FAILED+=("$case_name:output")
         cat "$work/check_output.log"
     fi
 
