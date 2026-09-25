@@ -3,18 +3,18 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/pion.git
-    VERSION: develop
+    VERSION: master
     DIR: pion
 
-MODULES: [IMAS-AL-Fortran, IMAS-AL-Python, iWrap, INTERPOS, NAG/26-intel-compilers-2023.2.1, XMLlib]
+MODULES: [IMAS-Fortran, IMAS-Python, iWrap, INTERPOS, NAG/26-intel-compilers-2023.2.1, XMLlib]
 
 BUILDS: 
   - DIR: pion
-    CMD: IMASFORPION=DIMAS_LATEST make clean veryclean pimascal.a F90=ifort
+    CMD: IMASFORPION=DIMAS_LATEST make clean veryclean pimascal.a F90="$FC"
 
 ACTORS: 
   - DIR: pion
-    CMD: IMASFORPION=DIMAS_LATEST make iwrap_actor F90=ifort
+    CMD: IMASFORPION=DIMAS_LATEST make iwrap_actor F90="$FC"
 
 #COMMENTS:  
 ...

@@ -3,18 +3,18 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/hcd2core-sources.git
-    VERSION: develop
+    VERSION: master
     DIR:     hcd2core-sources
 
-MODULES: [IMAS-AL-Fortran, IMAS-AL-Python, iWrap, INTERPOS, XMLlib]
+MODULES: [IMAS-Fortran, IMAS-Python, iWrap, INTERPOS, XMLlib]
 
 BUILDS: 
   - DIR: hcd2core-sources
-    CMD: make -C src/ veryclean info library DEBUG=yes FC=ifort
+    CMD: make -C src/ veryclean info library DEBUG=yes FC="$FC"
 
 ACTORS: 
   - DIR: hcd2core-sources
-    CMD: make -C src/ iwrapactor FC=ifort DEBUG=yes
+    CMD: make -C src/ iwrapactor FC="$FC" DEBUG=yes
 
 #COMMENTS:  
 ...

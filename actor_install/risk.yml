@@ -3,18 +3,18 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/risk.git
-    VERSION: develop
+    VERSION: master
     DIR:     risk
 
-MODULES: [IMAS-AL-Fortran, IMAS-AL-Python, iWrap, GGD, INTERPOS, XMLlib]
+MODULES: [IMAS-Fortran, IMAS-Python, iWrap, GGD, INTERPOS, XMLlib]
 
 BUILDS: 
   - DIR: risk
-    CMD: make clean library FCOMPILER=ifort USE_FRUIT=yes
+    CMD: make clean library FCOMPILER="$FC" USE_FRUIT=yes
 
 ACTORS: 
   - DIR: risk
-    CMD: make actor FCOMPILER=ifort USE_FRUIT=yes
+    CMD: make actor FCOMPILER="$FC" USE_FRUIT=yes
 
 #COMMENTS:  
 ...

@@ -3,18 +3,20 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/stixredist.git
-    VERSION: develop
+    VERSION: master
     DIR: stixredist
 
-MODULES: [IMAS, iWrap]
+MODULES: [IMAS-Fortran, IMAS-Python, iWrap]
+
+ACTOR_NAMES: [stix_redist]
 
 BUILDS:
   - DIR: stixredist 
-    CMD: make veryclean validate library DEBUG=yes FC=ifort
+    CMD: make veryclean validate library DEBUG=yes FC="$FC"
 
 ACTORS: 
   - DIR: stixredist
-    CMD: make iwrap_actor DEBUG=yes FC=ifort
+    CMD: make iwrap_actor DEBUG=yes FC="$FC"
 
 #COMMENTS:  
 ...
