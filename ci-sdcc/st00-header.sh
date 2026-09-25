@@ -19,5 +19,12 @@ for module_name in "${RUNMODULES[@]}"; do
     module load "$module_name" || return 1
 done
 
+# Determine IMAS version from the Fortran module if not already set.
+if [[ -z "${IMAS_VERSION:-}" ]] && pkg-config --exists al-fortran 2>/dev/null; then
+    IMAS_VERSION=$(pkg-config --modversion al-fortran | cut -d- -f1)
+    export IMAS_VERSION
+fi
+
 echo "> Loaded modules"
 module list 2>&1
+echo "> Using IMAS_VERSION=${IMAS_VERSION:-unset}"
