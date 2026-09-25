@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/nemo.git
-    VERSION: master
+    VERSION: develop
     DIR:     nemo
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, FRUIT, FRUIT_processor, INTERPOS, XMLlib]
+MODULES: [IMAS-Python, iWrap, FRUIT, FRUIT_processor, INTERPOS, XMLlib, IMAS-Fortran]
 
 BUILDS: 
   - DIR: nemo

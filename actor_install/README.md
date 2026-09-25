@@ -17,10 +17,10 @@ Then put `$ACTOR_FOLDER` on your `PYTHONPATH` and the workflow will find them.
 SOURCES:
   - VCS: git                      # git or svn
     REPO: ssh://git@git.iter.org/heat/grayscale.git
-    VERSION: master               # branch, tag or commit hash
+    VERSION: develop              # branch, tag or commit hash
     DIR: grayscale
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib, lxml]
+MODULES: [IMAS-Python, iWrap, XMLlib, lxml, IMAS-Fortran]
 
 BUILDS:
   - DIR: grayscale

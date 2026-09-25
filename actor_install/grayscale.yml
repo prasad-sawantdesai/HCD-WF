@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/grayscale.git
-    VERSION: master
+    VERSION: develop
     DIR: grayscale
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib,lxml]
+MODULES: [IMAS-Python, iWrap, XMLlib, lxml, IMAS-Fortran]
 
 BUILDS: 
   - DIR: grayscale

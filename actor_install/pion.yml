@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/pion.git
-    VERSION: master
+    VERSION: develop
     DIR: pion
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, INTERPOS, NAG/26-intel-compilers-2023.2.1, XMLlib]
+MODULES: [IMAS-Python, iWrap, INTERPOS, NAG/26-intel-compilers-2023.2.1, XMLlib, IMAS-Fortran]
 
 BUILDS: 
   - DIR: pion

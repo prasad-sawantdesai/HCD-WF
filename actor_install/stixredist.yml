@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/stixredist.git
-    VERSION: master
+    VERSION: develop
     DIR: stixredist
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap]
+MODULES: [IMAS-Python, iWrap, IMAS-Fortran]
 
 ACTOR_NAMES: [stix_redist]
 

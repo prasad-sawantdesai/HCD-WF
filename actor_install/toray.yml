@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/toray.git
-    VERSION: master
+    VERSION: develop
     DIR: toray
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib]
+MODULES: [IMAS-Python, iWrap, XMLlib, IMAS-Fortran]
 
 BUILDS: 
   - DIR: toray

@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/toric.git
-    VERSION: master
+    VERSION: develop
     DIR: toric
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib, netCDF-Fortran, FFTW]
+MODULES: [IMAS-Python, iWrap, XMLlib, netCDF-Fortran, FFTW, IMAS-Fortran]
 
 BUILDS: 
   - DIR: toric

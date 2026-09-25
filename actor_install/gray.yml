@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/gray.git
-    VERSION: master
+    VERSION: develop
     DIR: gray
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib]
+MODULES: [IMAS-Python, iWrap, XMLlib, IMAS-Fortran]
 
 BUILDS: 
   - DIR: gray

@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/relax.git
-    VERSION: master
+    VERSION: develop
     DIR: relax
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib]
+MODULES: [IMAS-Python, iWrap, XMLlib, IMAS-Fortran]
 
 BUILDS: 
   - DIR: relax

@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:     git
     REPO:    ssh://git@git.iter.org/heat/hcd-mergers.git
-    VERSION: master
+    VERSION: develop
     DIR:     hcd_mergers
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap]
+MODULES: [IMAS-Python, iWrap, IMAS-Fortran]
 
 ACTOR_NAMES: [merge_core_sources, merge_distribution_sources, merge_distributions, merge_waves]
 

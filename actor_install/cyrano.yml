@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/cyrano.git
-    VERSION: master
+    VERSION: develop
     DIR: cyrano
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, XMLlib, INTERPOS]
+MODULES: [IMAS-Python, iWrap, XMLlib, INTERPOS, IMAS-Fortran]
 
 BUILDS: 
   - DIR: cyrano

@@ -3,10 +3,10 @@
 SOURCES:
   - VCS:  git
     REPO: ssh://git@git.iter.org/heat/torbeam.git
-    VERSION: master
+    VERSION: develop
     DIR: torbeam
 
-MODULES: [IMAS-Fortran, IMAS-Python, iWrap, INTERPOS, XMLlib, CMake]
+MODULES: [IMAS-Python, iWrap, INTERPOS, XMLlib, CMake, IMAS-Fortran]
 
 BUILDS: 
   - DIR: torbeam/tests/test_imas
