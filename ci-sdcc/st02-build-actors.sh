@@ -8,6 +8,9 @@
 #   ACTOR_CACHE_ROOT cache location (default: /mnt/bamboo_deploy/HCD-WF/actor-cache on Bamboo,
 #                    ~/.cache/hcd-wf-actors otherwise)
 #   FORCE_REBUILD    set to 1 to rebuild even if the actor is cached
+#   GIT_HTTP_TOKEN   HTTP access token for git.iter.org (default: $bamboo_HTTP_AUTH_BEARER_PASSWORD).
+#                    When set, the ssh://git@git.iter.org/ URLs of the actor YAMLs are cloned over HTTPS,
+#                    for agents without an SSH key
 #
 # An actor is cached per module list, actor YAML content and resolved source commit, so a new
 # commit on the branch or a different MODULES triggers a rebuild of that actor only.
@@ -31,6 +34,21 @@ else
     ACTOR_CACHE_ROOT="${ACTOR_CACHE_ROOT:-${XDG_CACHE_HOME:-$HOME/.cache}/hcd-wf-actors}"
 fi
 ROOT_DIR=$(pwd)
+
+# Clone over HTTPS with a token instead of SSH. GIT_CONFIG_* applies to every git command of this
+# script and of actor_install.py, without writing the token to a git config file
+GIT_HTTP_TOKEN="${GIT_HTTP_TOKEN:-${bamboo_HTTP_AUTH_BEARER_PASSWORD:-}}"
+if [[ -n "$GIT_HTTP_TOKEN" ]]; then
+    echo "> Using HTTPS with access token for git.iter.org"
+    export GIT_CONFIG_COUNT=2
+    export GIT_CONFIG_KEY_0="url.https://git.iter.org/scm/.insteadOf"
+    export GIT_CONFIG_VALUE_0="ssh://git@git.iter.org/"
+    export GIT_CONFIG_KEY_1="http.https://git.iter.org/.extraHeader"
+    export GIT_CONFIG_VALUE_1="Authorization: Bearer $GIT_HTTP_TOKEN"
+    # Fail instead of waiting for a password prompt
+    export GIT_TERMINAL_PROMPT=0
+fi
+unset GIT_HTTP_TOKEN
 
 umask 002
 
@@ -57,9 +75,13 @@ resolve_commit() {
         echo "$version"
         return 0
     fi
+    local refs
+    if ! refs=$(git ls-remote "$repo" "refs/heads/$version" "refs/tags/$version" "refs/tags/$version^{}"); then
+        echo "ERROR: cannot access $repo (check the SSH key, or set GIT_HTTP_TOKEN)" >&2
+        return 1
+    fi
     # For annotated tags the peeled ^{} entry is the commit
-    commit=$(git ls-remote "$repo" "refs/heads/$version" "refs/tags/$version" "refs/tags/$version^{}" |
-        sort -k2 | tail -n 1 | cut -f1)
+    commit=$(sort -k2 <<< "$refs" | tail -n 1 | cut -f1)
     if [[ -z "$commit" ]]; then
         echo "ERROR: $version not found in $repo" >&2
         return 1
