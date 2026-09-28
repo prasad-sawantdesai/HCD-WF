@@ -114,24 +114,22 @@ for actor in $ACTORS; do
     dest="$CACHE_DIR/$actor-$(sha256sum <<< "$key_input" | cut -c1-12)"
 
     tmp="$dest.tmp.$$"
+    # Every step is checked explicitly: set -e has no effect in a subshell followed by ||
     (
-        set -e
         # Only one build of the same actor at a time, a parallel job waits and reuses it
-        flock 9
-        if [[ -f "$dest/.complete" && -z "${FORCE_REBUILD:-}" ]]; then
+        flock 9 || exit 1
+        if [[ -f "$dest/.complete" && -n "$(ls -A "$dest/actors" 2>/dev/null)" && -z "${FORCE_REBUILD:-}" ]]; then
             echo "> $actor: using cached build $dest"
             exit 0
         fi
         echo "> $actor: building into $dest"
-        rm -rf "$tmp"
-        mkdir -p "$tmp/actors"
+        rm -rf "$tmp" && mkdir -p "$tmp/actors" || exit 1
         # ACTOR_VERSIONS is already resolved into the pins
         (cd "$tmp" && ACTOR_FOLDER="$tmp/actors" ACTOR_VERSIONS="" \
-            python3 "$ROOT_DIR/actor_install/actor_install.py" --skipModules -p -D src "${pins[@]}" "$yml")
-        echo "$key_input" > "$tmp/cache_key.txt"
-        touch "$tmp/.complete"
-        rm -rf "$dest"
-        mv -T "$tmp" "$dest"
+            python3 "$ROOT_DIR/actor_install/actor_install.py" --skipModules -p -D src "${pins[@]}" "$yml") || exit 1
+        # Only a successful build is marked complete and moved into the cache
+        echo "$key_input" > "$tmp/cache_key.txt" && touch "$tmp/.complete" || exit 1
+        rm -rf "$dest" && mv -T "$tmp" "$dest" || exit 1
     ) 9>"$dest.lock" || {
         echo "ERROR: building $actor failed" >&2
         rm -rf "$tmp"
